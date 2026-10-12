@@ -1,12 +1,15 @@
-FROM python:2.12
+FROM python:3.12
 
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install
+
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
 
-EXPOSE
+EXPOSE 8000
 
-ENTRYPOINT ["entrypoint.sh"]
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]

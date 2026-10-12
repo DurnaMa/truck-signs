@@ -1,0 +1,7 @@
+**/__pycache__/
+.env
+src/screenshots/
+docs/
+.git/
+truck-signs/
+src/db.sqlite3

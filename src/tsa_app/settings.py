@@ -111,7 +111,6 @@ pg_config = {
     "ENGINE": db_engine,
     "NAME": os.getenv("DB_NAME", "trucksigns_db"),
     "USER": os.getenv("DB_USER", "trucksigns_user"),
-    "PASSWORD": os.environ["DB_PASSWORD"],
     "HOST": os.getenv("DB_HOST", "localhost"),
     "PORT": os.getenv("DB_PORT", "5432"),
 }
@@ -121,7 +120,10 @@ sqlite_config = {
     "NAME": BASE_DIR / "db.sqlite3",
 }
 
-db_config = sqlite_config if MODE != "prod" else pg_config
+if MODE == "prod":
+    db_config = {**pg_config, "PASSWORD": os.environ["DB_PASSWORD"]}
+else:
+    db_config = {**sqlite_config}
 
 DATABASES = {"default": db_config}
 

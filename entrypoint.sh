@@ -17,8 +17,19 @@ python manage.py collectstatic --noinput
 
 python manage.py migrate --noinput
 
-DJANGO_SUPERUSER_PASSWORD="$SUPER_USER_PASSWORD" python manage.py createsuperuser \
-  --username "$SUPER_USER_NAME" --email "$SUPER_USER_EMAIL" --noinput || true
+if python manage.py shell -c \
+    "from django.contrib.auth.models import User; \
+    import os; \
+    import sys; \
+    gibt_es = User.objects.filter(username=os.getenv('SUPER_USER_NAME')).exists(); \
+    code    = 0 if gibt_es else 1; \
+    sys.exit(code)"; then
+    echo "Superuser already exists"
+else
+    echo "Creating superuser"
+    DJANGO_SUPERUSER_PASSWORD="$SUPER_USER_PASSWORD" python manage.py createsuperuser \
+      --username "$SUPER_USER_NAME" --email "$SUPER_USER_EMAIL" --noinput
+fi
 
 echo "Postgresql migrations finished"
 

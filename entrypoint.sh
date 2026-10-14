@@ -33,4 +33,4 @@ fi
 
 echo "Postgresql migrations finished"
 
-exec gunicorn tsa_app.wsgi:application --bind 0.0.0.0:8000 --workers 4
+exec gunicorn tsa_app.wsgi:application --bind 0.0.0.0:8020 --workers 4

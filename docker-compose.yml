@@ -7,8 +7,6 @@ services:
       - tsa-network
     volumes:
       - postgres_data:/var/lib/postgresql
-    ports:
-      - '8020:5432'
     healthcheck:
       test:
         [
@@ -41,6 +39,8 @@ services:
     volumes:
       - ./src/staticfiles:/app/src/staticfiles
       - ./src/media:/app/src/media
+    ports:
+      - '8020:8000'
     depends_on:
       db:
         condition: service_healthy

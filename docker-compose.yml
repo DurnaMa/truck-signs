@@ -1,12 +1,12 @@
 services:
   db:
-    image: postgres:7-alpine
+    image: postgres:18.6-alpine
     container_name: tsa_db
     env_file: .env
     networks:
       - tsa-network
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     ports:
       - '5432:5432'
     healthcheck:
@@ -28,12 +28,16 @@ services:
     environment:
       MODE: prod
       DEBUG_ENABLED: 'False'
-      DB_NAME: trucksigns_db
-      DB_USER: trucksigns_user
-      DB_PASSWORD: supertrucksignsuser!
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
       DB_HOST: tsa_db
-      DB_PORT: 5432
+      DB_PORT: ${DB_PORT}
       ALLOWED_HOSTS: localhost,127.0.0.1,tsa-web
+      SUPER_USER_NAME: ${SUPER_USER_NAME}
+      SUPER_USER_EMAIL: ${SUPER_USER_EMAIL}
+      SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
     volumes:
       - ./src/staticfiles:/app/src/staticfiles
       - ./src/media:/app/src/media

@@ -6,7 +6,7 @@ cd /app/src
 echo "Waiting for postgres to connect ..."
 
 # Wait for the database to be up and ready, if not ready, then sleep for 5 seconds
-while ! nc -z ${DB_HOST} ${DB_PORT}; do
+while ! nc -z "${DB_HOST}" "${DB_PORT}"; do
   echo "Waiting for database connection..."
   sleep 5
 done

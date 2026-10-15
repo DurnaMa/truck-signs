@@ -27,8 +27,8 @@ if python manage.py shell -c \
     echo "Superuser already exists"
 else
     echo "Creating superuser"
-    DJANGO_SUPERUSER_PASSWORD="$SUPER_USER_PASSWORD" python manage.py createsuperuser \
-      --username "$SUPER_USER_NAME" --email "$SUPER_USER_EMAIL" --noinput
+    DJANGO_SUPERUSER_PASSWORD="${SUPER_USER_PASSWORD}" python manage.py createsuperuser \
+      --username "${SUPER_USER_NAME}" --email "${SUPER_USER_EMAIL}" --noinput
 fi
 
 echo "Postgresql migrations finished"

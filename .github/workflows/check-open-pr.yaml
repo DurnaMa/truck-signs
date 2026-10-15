@@ -22,19 +22,19 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
           REPO: ${{ github.repository }}
         run: |
-          echo "Checking open PR for branch: $BRANCH_NAME"
+          echo "Checking open PR for branch: ${BRANCH_NAME}"
 
           PR_COUNT=$(gh pr list \
-            --repo "$REPO" \
+            --repo "${REPO}" \
             --state open \
-            --head "$BRANCH_NAME" \
+            --head "${BRANCH_NAME}" \
             --json number \
             --jq 'length')
 
-          if [ "$PR_COUNT" -eq 0 ]; then
-            echo "No open PR found for branch '$BRANCH_NAME'."
+          if [ "${PR_COUNT}" -eq 0 ]; then
+            echo "No open PR found for branch '${BRANCH_NAME}'."
             echo "Please create a pull request before submitting this branch."
             exit 1
           fi
 
-          echo "Open PR found for branch '$BRANCH_NAME'."
+          echo "Open PR found for branch '${BRANCH_NAME}'."

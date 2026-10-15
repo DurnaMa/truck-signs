@@ -2,6 +2,7 @@ services:
   db:
     image: postgres:18.6-alpine
     container_name: tsa_db
+    restart: unless-stopped
     env_file: .env
     networks:
       - tsa-network
@@ -18,9 +19,9 @@ services:
       retries: 5
 
   backend:
-    build: .
+    image: ghcr.io/durnama/truck-signs:${IMAGE_TAG:-latest}
     container_name: tsa_backend
-    
+    restart: unless-stopped
     networks:
       - tsa-network
     environment:
@@ -37,8 +38,7 @@ services:
       SUPER_USER_EMAIL: ${SUPER_USER_EMAIL}
       SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
     volumes:
-      - ./src/staticfiles:/app/src/staticfiles
-      - ./src/media:/app/src/media
+      - media_data:/app/src/mediafiles
     ports:
       - '8020:8000'
     depends_on:
@@ -47,6 +47,7 @@ services:
 
 volumes:
   postgres_data:
+  media_data:
 
 networks:
   tsa-network:

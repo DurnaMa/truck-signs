@@ -38,15 +38,17 @@ services:
       SUPER_USER_EMAIL: ${SUPER_USER_EMAIL}
       SUPER_USER_PASSWORD: ${SUPER_USER_PASSWORD}
     volumes:
+      - static_data:/app/src/staticfiles
       - media_data:/app/src/mediafiles
     ports:
-      - '8020:8000'
+      - '${APP_PORT:-8020}:8000'
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
   postgres_data:
+  static_data:
   media_data:
 
 networks:

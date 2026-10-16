@@ -14,12 +14,12 @@ The store also allows clients to upload their own designs and to customize them 
 ## Table of Contents
 
 - [About this Repository](#about-this-repository)
-- [Files](#files)
 - [Prerequisites](#prerequisites)
 - [Quickstart](#quickstart)
   - [How to Build the Image](#how-to-build-the-image)
 - [Access](#access)
 - [Usage](#usage)
+  - [Files](#files)
   - [Configuration](#configuration)
   - [Run with docker run](#run-with-docker-run)
   - [Verify](#verify)
@@ -49,26 +49,7 @@ packaged for deployment with Docker:
 - A GitHub Actions workflow builds the image and publishes it to the GitHub Container
   Registry (`ghcr.io/durnama/truck-signs`).
 
-The API is served on port `8020` of the host.
-
-## Files
-
-| File | Purpose |
-| --- | --- |
-| `README.md` | This documentation |
-| `Dockerfile` | Builds the application image based on `python:3.12`, installs `netcat-openbsd` and the Python dependencies |
-| `docker-compose.yml` | Defines the `db` (PostgreSQL) and `backend` (API) services, the network `tsa-network` and the volumes `postgres_data` and `media_data` |
-| `entrypoint.sh` | Container entrypoint: waits for the database, runs `collectstatic` and `migrate`, creates the superuser if missing, starts Gunicorn |
-| `example.env` | Template for the `.env` file with all configuration variables |
-| `.dockerignore` | Files excluded from the Docker build context (e.g. `.env`, `.git/`, screenshots, docs) |
-| `.gitignore` | Files excluded from version control (e.g. `.env`) |
-| `requirements.txt` | Python dependencies |
-| `pyproject.toml` | Configuration for the code quality tools `black`, `isort` and `flake8` |
-| `docs/testing.md` | Description of the linters, formatter and tests |
-| `.github/workflows/test.yaml` | CI: lints the code and runs the Django tests on pushes and pull requests to `main` |
-| `.github/workflows/build.yaml` | CI: builds the image and pushes it to `ghcr.io` when a Git tag is pushed |
-| `.github/workflows/check-open-pr.yaml` | CI: fails if a pushed feature branch has no open pull request |
-| `src/` | Django project: `manage.py`, settings (`tsa_app`), the store app (`tsa_products`), templates and screenshots |
+The API is served on port `8020` of the host by default (configurable with `APP_PORT`).
 
 ## Prerequisites
 
@@ -156,6 +137,25 @@ published to the host.
 
 ## Usage
 
+### Files
+
+| File | Purpose |
+| --- | --- |
+| `README.md` | This documentation |
+| `Dockerfile` | Builds the application image based on `python:3.12`, installs `netcat-openbsd` and the Python dependencies |
+| `docker-compose.yml` | Defines the `db` (PostgreSQL) and `backend` (API) services, the network `tsa-network` and the volumes `postgres_data`, `static_data` and `media_data` |
+| `entrypoint.sh` | Container entrypoint: waits for the database, runs `collectstatic` and `migrate`, creates the superuser if missing, starts Gunicorn |
+| `example.env` | Template for the `.env` file with all configuration variables |
+| `.dockerignore` | Files excluded from the Docker build context (e.g. `.env`, `.git/`, screenshots, docs) |
+| `.gitignore` | Files excluded from version control (e.g. `.env`) |
+| `requirements.txt` | Python dependencies |
+| `pyproject.toml` | Configuration for the code quality tools `black`, `isort` and `flake8` |
+| `docs/testing.md` | Description of the linters, formatter and tests |
+| `.github/workflows/test.yaml` | CI: lints the code and runs the Django tests on pushes and pull requests to `main` |
+| `.github/workflows/build.yaml` | CI: builds the image and pushes it to `ghcr.io` when a Git tag is pushed |
+| `.github/workflows/check-open-pr.yaml` | CI: fails if a pushed feature branch has no open pull request |
+| `src/` | Django project: `manage.py`, settings (`tsa_app`), the store app (`tsa_products`), templates and screenshots |
+
 ### Configuration
 
 All values are read from the `.env` file in the project root. `example.env` lists every
@@ -177,6 +177,7 @@ key; remove the leading `#` of the lines you need.
 | `SUPER_USER_EMAIL` | E-mail of that superuser | |
 | `SUPER_USER_PASSWORD` | Password of that superuser | |
 | `IMAGE_TAG` | Image tag used by `docker-compose.yml` | `latest` |
+| `APP_PORT` | Host port the API is published on by `docker-compose.yml` | `8020` |
 | `MODE` | `prod` uses PostgreSQL, `dev` or unset uses SQLite at `src/db.sqlite3`. Docker Compose always sets `prod` | |
 | `DEBUG_ENABLED` | Enables Django debug mode. Docker Compose always sets `False` | `False` |
 | `CLOUD_NAME`, `CLOUD_API_KEY`, `CLOUD_API_SECRET` | Cloudinary credentials for media uploads. Only used if `CLOUD_NAME` is set. Not passed to the container by Docker Compose | |
@@ -228,6 +229,7 @@ docker run -d \
   -e SUPER_USER_NAME=<SUPER_USER_NAME> \
   -e SUPER_USER_EMAIL=<SUPER_USER_EMAIL> \
   -e SUPER_USER_PASSWORD=<SUPER_USER_PASSWORD> \
+  -v static_data:/app/src/staticfiles \
   -v media_data:/app/src/mediafiles \
   ghcr.io/durnama/truck-signs:latest
 ```
@@ -269,7 +271,7 @@ docker compose down
 ```
 
 > [!WARNING]
-> The `-v` flag also deletes the volumes `postgres_data` and `media_data`.
+> The `-v` flag also deletes the volumes `postgres_data`, `static_data` and `media_data`.
 > All database content, including the superuser, and all uploaded media are lost.
 >
 > ```bash
